@@ -15,9 +15,10 @@ type Config struct {
 }
 
 type App struct {
-	AppSecret string
-	PageSize  int
-	PrefixUrl string
+	AppSecret     string
+	AppSignExpire int
+	PageSize      int
+	PrefixUrl     string
 
 	RuntimeRootPath string
 
