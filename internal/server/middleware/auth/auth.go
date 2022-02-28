@@ -3,11 +3,16 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"github.com/EDDYCJY/go-gin-example/pkg/e"
+	"github.com/EDDYCJY/go-gin-example/pkg/util"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/url"
-	"shop-api/internal/pkg/sign"
+	"shop-search-api/internal/config"
+	"shop-search-api/internal/pkg/errcode"
+	"shop-search-api/internal/pkg/sign"
+	"shop-search-api/internal/server/api"
 	"sort"
 	"strconv"
 	"strings"
@@ -27,11 +32,38 @@ sn = MD5(secretKey + encryptParamStr + appKey)
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var code int
-		var data interface{}
+		appG := api.Gin{C: c}
+		ak := c.Query("ak")
+		sn := c.Query("sn")
+		ts := c.GetInt64("ts")
+		if len(ak) == 0 {
+			appG.ResponseErr(errcode.ErrCodes.ErrAppKey)
+			c.Abort()
+			return
+		}
+		if len(sn) == 0 {
+			appG.ResponseErr(errcode.ErrCodes.ErrSign)
+			c.Abort()
+			return
+		}
+		if ts == 0 {
+			appG.ResponseErr(errcode.ErrCodes.ErrParams)
+			c.Abort()
+			return
+		}
+		// 验证过期时间
+		timestamp := time.Now().Unix()
+		if ts > timestamp || timestamp-ts >= config.Cfg.App.AppSignExpire {
+			appG.ResponseErr(errcode.ErrCodes.ErrAuthExpired)
+			c.Abort()
+			return
+		}
 
-		code = e.SUCCESS
-		sign, err := verifySign(c)
+		// 验证签名
+		if sn == "" || sn != createSign(req) {
+			return nil, errors.New("sn Error")
+		}
+
 		if token == "" {
 			code = e.INVALID_PARAMS
 		} else {
@@ -59,49 +91,6 @@ func Auth() gin.HandlerFunc {
 
 		c.Next()
 	}
-}
-
-// 验证签名
-func verifySign(c *gin.Context) (map[string]string, error) {
-	_ = c.Request.ParseForm()
-	req := c.Request.Form
-	debug := strings.Join(c.Request.Form["debug"], "")
-	ak := strings.Join(c.Request.Form["ak"], "")
-	sn := strings.Join(c.Request.Form["sn"], "")
-	ts := strings.Join(c.Request.Form["ts"], "")
-
-	// 验证来源
-	value, ok := config.ApiAuthConfig[ak]
-	if ok {
-		AppSecret = value["md5"]
-	} else {
-		return nil, errors.New("ak Error")
-	}
-
-	if debug == "1" {
-		currentUnix := util.GetCurrentUnix()
-		req.Set("ts", strconv.FormatInt(currentUnix, 10))
-		res := map[string]string{
-			"ts": strconv.FormatInt(currentUnix, 10),
-			"sn": createSign(req),
-		}
-		return res, nil
-	}
-
-	// 验证过期时间
-	timestamp := time.Now().Unix()
-	exp, _ := strconv.ParseInt(config.AppSignExpiry, 10, 64)
-	tsInt, _ := strconv.ParseInt(ts, 10, 64)
-	if tsInt > timestamp || timestamp-tsInt >= exp {
-		return nil, errors.New("ts Error")
-	}
-
-	// 验证签名
-	if sn == "" || sn != createSign(req) {
-		return nil, errors.New("sn Error")
-	}
-
-	return nil, nil
 }
 
 // 创建签名

@@ -1,23 +1,30 @@
 package config
 
 import (
-	"log"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"time"
 )
 
+var Cfg = &Config{}
+
 type Config struct {
-	App    App    `yaml:"app"`
-	Server Server `yaml:"server"`
-	Mysql  Mysql  `yaml:"mysql"`
-	Server Server `yaml:"server"`
-	Server Server `yaml:"server"`
-	Server Server `yaml:"server"`
+	App           App           `yaml:"app"`
+	Mysql         Mysql         `yaml:"mysql"`
+	MongoDB       MongoDB       `yaml:"mongodb"`
+	Elasticsearch Elasticsearch `yaml:"elasticsearch"`
+	Redis         Redis         `yaml:"redis"`
 }
 
 type App struct {
-	AppSecret     string
-	AppSignExpire int
-	PageSize      int
+	SK            string `yaml:"sk"`
+	AK            string `yaml:"ak"`
+	AppSignExpire int64  `yaml:"app_sign_expire"`
+	PageSize      int    `yaml:"app_secret"`
+	RunMode       string `yaml:"app_secret"`
+	HttpPort      int64  `yaml:"app_secret"`
+	ReadTimeout   int64
+	WriteTimeout  time.Duration
 	PrefixUrl     string
 
 	RuntimeRootPath string
@@ -31,17 +38,6 @@ type App struct {
 	LogFileExt  string
 	TimeFormat  string
 }
-
-var AppSetting = &App{}
-
-type Server struct {
-	RunMode      string
-	HttpPort     int
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-}
-
-var ServerSetting = &Server{}
 
 type Mysql struct {
 	DBName      string `yaml: "dbname"`
@@ -60,7 +56,13 @@ type MongoDB struct {
 	Port     string `yaml: "port"`
 }
 
-var DatabaseSetting = &Database{}
+type Elasticsearch struct {
+	URL            string `yaml: "url"`
+	User           string `yaml: "user"`
+	Password       string `yaml: "password"`
+	BulkActionNum  int    `yaml: "bulk_action_num"`
+	BulkActionSize int    `yaml: "bulk_action_size"` //kb
+}
 
 type Redis struct {
 	Host        string
@@ -70,33 +72,16 @@ type Redis struct {
 	IdleTimeout time.Duration
 }
 
-var RedisSetting = &Redis{}
-
-var cfg *ini.File
-
 // Setup initialize the configuration instance
-func Setup() {
-	var err error
-	cfg, err = ini.Load("conf/app.ini")
-	if err != nil {
-		log.Fatalf("setting.Setup, fail to parse 'conf/app.ini': %v", err)
-	}
-
-	mapTo("app", AppSetting)
-	mapTo("server", ServerSetting)
-	mapTo("database", DatabaseSetting)
-	mapTo("redis", RedisSetting)
-
-	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
-	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
-	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
-	RedisSetting.IdleTimeout = RedisSetting.IdleTimeout * time.Second
-}
-
-// mapTo map section
-func mapTo(section string, v interface{}) {
-	err := cfg.Section(section).MapTo(v)
-	if err != nil {
-		log.Fatalf("Cfg.MapTo %s err: %v", section, err)
+func LoadConfig() {
+	viper := viper.New()
+	viper.AddConfigPath("../../config/config.yml")
+	//viper.WatchConfig()
+	//viper.OnConfigChange(func(e fsnotify.Event) {
+	//	fmt.Println("Config file changed:", e.Name)
+	//})
+	if err := viper.Unmarshal(&Cfg); err != nil {
+		logrus.Error(err)
+		panic(err)
 	}
 }
