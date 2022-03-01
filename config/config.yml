@@ -10,11 +10,29 @@ app:
   log_path: logs/
 
 mysql:
-  dbname: shop_search
-
+  dbname: shop
+  user: test
+  password: test
+  host: 127.0.0.1:3306
+  table_prefix: search_
 
 mongodb:
+    dbname: shop
+    user: test
+    password: test
+    host: 127.0.0.1:27017
 
 elasticsearch:
+  url: http://127.0.0.1:9200
+  user: elastic
+  password: test
+  bulk_action_num: 1000
+  bulk_action_size: 20480
+  bulk_workers_num: 10
 
 redis:
+  host: 127.0.0.1:27017
+  password: test
+  max_idle: 30
+  max_active: 30
+  idle_timeout: 200

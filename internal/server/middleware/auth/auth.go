@@ -2,21 +2,11 @@ package auth
 
 import (
 	"errors"
-	"fmt"
-	"github.com/EDDYCJY/go-gin-example/pkg/e"
-	"github.com/EDDYCJY/go-gin-example/pkg/util"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"net/url"
-	"shop-search-api/internal/config"
-	"shop-search-api/internal/pkg/errcode"
-	"shop-search-api/internal/pkg/sign"
+	"shop-search-api/config"
 	"shop-search-api/internal/server/api"
-	"sort"
-	"strconv"
 	"strings"
-	"time"
 )
 
 var AppSecret string
@@ -33,87 +23,115 @@ sn = MD5(secretKey + encryptParamStr + appKey)
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		appG := api.Gin{C: c}
-		ak := c.Query("ak")
-		sn := c.Query("sn")
-		ts := c.GetInt64("ts")
-		if len(ak) == 0 {
-			appG.ResponseErr(errcode.ErrCodes.ErrAppKey)
-			c.Abort()
-			return
-		}
-		if len(sn) == 0 {
-			appG.ResponseErr(errcode.ErrCodes.ErrSign)
-			c.Abort()
-			return
-		}
-		if ts == 0 {
-			appG.ResponseErr(errcode.ErrCodes.ErrParams)
-			c.Abort()
-			return
-		}
-		// 验证过期时间
-		timestamp := time.Now().Unix()
-		if ts > timestamp || timestamp-ts >= config.Cfg.App.AppSignExpire {
-			appG.ResponseErr(errcode.ErrCodes.ErrAuthExpired)
-			c.Abort()
+		// 签名信息
+		authorization := c.GetHeader(config.HeaderAuthField)
+		if authorization == "" {
+			c.AbortWithError(core.Error(
+				http.StatusBadRequest,
+				code.AuthorizationError,
+				code.Text(code.AuthorizationError)).WithError(errors.New("Header 中缺少 Authorization 参数")),
+			)
 			return
 		}
 
-		// 验证签名
-		if sn == "" || sn != createSign(req) {
-			return nil, errors.New("sn Error")
+		// 时间信息
+		date := c.GetHeader(configs.HeaderSignTokenDate)
+		if date == "" {
+			c.AbortWithError(core.Error(
+				http.StatusBadRequest,
+				code.AuthorizationError,
+				code.Text(code.AuthorizationError)).WithError(errors.New("Header 中缺少 Date 参数")),
+			)
+			return
 		}
 
-		if token == "" {
-			code = e.INVALID_PARAMS
-		} else {
-			_, err := util.ParseToken(token)
-			if err != nil {
-				switch err.(*jwt.ValidationError).Errors {
-				case jwt.ValidationErrorExpired:
-					code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
-				default:
-					code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
-				}
+		// 通过签名信息获取 key
+		authorizationSplit := strings.Split(authorization, " ")
+		if len(authorizationSplit) < 2 {
+			c.AbortWithError(core.Error(
+				http.StatusBadRequest,
+				code.AuthorizationError,
+				code.Text(code.AuthorizationError)).WithError(errors.New("Header 中 Authorization 格式错误")),
+			)
+			return
+		}
+
+		key := authorizationSplit[0]
+
+		data, err := i.authorizedService.DetailByKey(c, key)
+		if err != nil {
+			c.AbortWithError(core.Error(
+				http.StatusBadRequest,
+				code.AuthorizationError,
+				code.Text(code.AuthorizationError)).WithError(err),
+			)
+			return
+		}
+
+		if data.IsUsed == authorized.IsUsedNo {
+			c.AbortWithError(core.Error(
+				http.StatusBadRequest,
+				code.AuthorizationError,
+				code.Text(code.AuthorizationError)).WithError(errors.New(key + " 已被禁止调用")),
+			)
+			return
+		}
+
+		if len(data.Apis) < 1 {
+			c.AbortWithError(core.Error(
+				http.StatusBadRequest,
+				code.AuthorizationError,
+				code.Text(code.AuthorizationError)).WithError(errors.New(key + " 未进行接口授权")),
+			)
+			return
+		}
+
+		if !whiteListPath[c.Path()] {
+			// 验证 c.Method() + c.Path() 是否授权
+			table := urltable.NewTable()
+			for _, v := range data.Apis {
+				_ = table.Append(v.Method + v.Api)
+			}
+
+			if pattern, _ := table.Mapping(c.Method() + c.Path()); pattern == "" {
+				c.AbortWithError(core.Error(
+					http.StatusBadRequest,
+					code.AuthorizationError,
+					code.Text(code.AuthorizationError)).WithError(errors.New(c.Method() + c.Path() + " 未进行接口授权")),
+				)
+				return
 			}
 		}
 
-		if code != e.SUCCESS {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": code,
-				"msg":  e.GetMsg(code),
-				"data": data,
-			})
-
-			c.Abort()
+		ok, err := signature.New(key, data.Secret, configs.HeaderSignTokenTimeout).Verify(authorization, date, c.Path(), c.Method(), c.RequestInputParams())
+		if err != nil {
+			c.AbortWithError(core.Error(
+				http.StatusBadRequest,
+				code.AuthorizationError,
+				code.Text(code.AuthorizationError)).WithError(err),
+			)
 			return
 		}
 
-		c.Next()
-	}
-}
-
-// 创建签名
-func createSign(params url.Values) string {
-	// 自定义 MD5 组合
-	return sign.MD5(AppSecret + createEncryptStr(params) + AppSecret)
-}
-
-func createEncryptStr(params url.Values) string {
-	var key []string
-	var str = ""
-	for k := range params {
-		if k != "sn" && k != "debug" {
-			key = append(key, k)
+		if !ok {
+			c.AbortWithError(core.Error(
+				http.StatusBadRequest,
+				code.AuthorizationError,
+				code.Text(code.AuthorizationError)).WithError(errors.New("Header 中 Authorization 信息错误")),
+			)
+			return
 		}
 	}
-	sort.Strings(key)
-	for i := 0; i < len(key); i++ {
-		if i == 0 {
-			str = fmt.Sprintf("%v=%v", key[i], params.Get(key[i]))
-		} else {
-			str = str + fmt.Sprintf("&%v=%v", key[i], params.Get(key[i]))
-		}
+	if code != e.SUCCESS {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code": code,
+			"msg":  e.GetMsg(code),
+			"data": data,
+		})
+
+		c.Abort()
+		return
 	}
-	return str
+
+	c.Next()
 }

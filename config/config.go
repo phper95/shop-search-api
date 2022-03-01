@@ -11,16 +11,20 @@ import (
 var Cfg = &Config{}
 
 type Config struct {
-	App App `yaml:"app"`
-	//Mysql         Mysql         `yaml:"mysql"`
-	//MongoDB       MongoDB       `yaml:"mongodb"`
-	//Elasticsearch Elasticsearch `yaml:"elasticsearch"`
-	//Redis         Redis         `yaml:"redis"`
+	App           App           `yaml:"app"`
+	Mysql         Mysql         `mapstructure:"mysql"`
+	MongoDB       MongoDB       `mapstructure:"mongodb"`
+	Elasticsearch Elasticsearch `mapstructure:"elasticsearch"`
+	Redis         Redis         `mapstructure:"redis"`
 }
 
 /**
 这里推荐使用mapstructure作为序列化标签
 yaml不支持 AppSignExpire int64  `yaml:"app_sign_expire"` 这种下划线的标签
+使用mapstructure值得注意的地方是，只要标签中使用了下划线等连接符，":"后就
+不能有空格。
+比如： AppSignExpire int64  `yaml:"app_sign_expire"`是可以被解析的
+          AppSignExpire int64  `yaml: "app_sign_expire"` 不能被解析
 */
 
 type App struct {
@@ -36,36 +40,35 @@ type App struct {
 }
 
 type Mysql struct {
-	DBName      string `mapstructure: "dbname"`
-	User        string `mapstructure: "user"`
-	Password    string `mapstructure: "password"`
-	Host        string `mapstructure: "host"`
-	Port        string `mapstructure: "port"`
-	TablePrefix string `mapstructure: "table_prefix"`
+	DBName      string `mapstructure:"dbname"`
+	User        string `mapstructure:"user"`
+	Password    string `mapstructure:"password"`
+	Host        string `mapstructure:"host"`
+	TablePrefix string `mapstructure:"table_prefix"`
 }
 
 type MongoDB struct {
-	DBname   string `mapstructure: "dbname"`
-	User     string `mapstructure: "user"`
-	Password string `mapstructure: "password"`
-	Host     string `mapstructure: "host"`
-	Port     string `mapstructure: "port"`
+	DBname   string `mapstructure:"dbname"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	Host     string `mapstructure:"host"`
 }
 
 type Elasticsearch struct {
-	URL            string `mapstructure: "url"`
-	User           string `mapstructure: "user"`
-	Password       string `mapstructure: "password"`
-	BulkActionNum  int    `mapstructure: "bulk_action_num"`
-	BulkActionSize int    `mapstructure: "bulk_action_size"` //kb
+	URL            string `mapstructure:"url"`
+	User           string `mapstructure:"user"`
+	Password       string `mapstructure:"password"`
+	BulkActionNum  int    `mapstructure:"bulk_action_num"`
+	BulkActionSize int    `mapstructure:"bulk_action_size"` //kb
+	BulkWorkersNum int    `mapstructure:"bulk_workers_num"`
 }
 
 type Redis struct {
-	Host        string        `mapstructure: "host"`
-	Password    string        `mapstructure: "password"`
-	MaxIdle     int           `mapstructure: "max_idle"`
-	MaxActive   int           `mapstructure: "max_active"`
-	IdleTimeout time.Duration `mapstructure: "idle_timeout"`
+	Host        string        `mapstructure:"host"`
+	Password    string        `mapstructure:"password"`
+	MaxIdle     int           `mapstructure:"max_idle"`
+	MaxActive   int           `mapstructure:"max_active"`
+	IdleTimeout time.Duration `mapstructure:"idle_timeout"`
 }
 
 // Setup initialize the configuration instance
