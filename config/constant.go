@@ -1,6 +1,7 @@
 package config
 
 const (
+	AppName = "shop-search-api"
 	//Header 中传递的参数字段，其携带的值为接口的签名
 	HeaderAuthField = "Authorization"
 

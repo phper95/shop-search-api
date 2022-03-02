@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/EDDYCJY/go-gin-example/middleware/jwt"
 	"github.com/gin-gonic/gin"
+	"shop-search-api/internal/server/middleware/auth"
 )
 
 func InitRouter() *gin.Engine {
@@ -11,6 +11,6 @@ func InitRouter() *gin.Engine {
 	//防止panic发生，返回500
 	r.Use(gin.Recovery())
 	apiv1 := r.Group("/api/v1")
-	apiv1.Use(jwt.JWT())
+	apiv1.Use(auth.Auth())
 
 }

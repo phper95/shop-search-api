@@ -36,7 +36,8 @@ type App struct {
 	ReadTimeout     int64         `mapstructure:"read_timeout"`
 	WriteTimeout    time.Duration `mapstructure:"write_timeout"`
 	RuntimeRootPath string        `mapstructure:"runtime_root_path"`
-	LogPath         string        `mapstructure:"log_path"`
+	AppLogPath      string        `mapstructure:"app_log_path"`
+	AccessLogPath   string        `mapstructure:"access_log_path"`
 }
 
 type Mysql struct {
