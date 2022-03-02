@@ -5,11 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"shop-search-api/config"
+	"shop-search-api/internal/pkg/errcode"
 	"shop-search-api/internal/server/api"
 	"strings"
 )
-
-var AppSecret string
 
 /**
 appKey     = "xxx"
@@ -23,36 +22,19 @@ sn = MD5(secretKey + encryptParamStr + appKey)
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		appG := api.Gin{C: c}
-		// 签名信息
+		// header信息校验
 		authorization := c.GetHeader(config.HeaderAuthField)
-		if authorization == "" {
-			c.AbortWithError(core.Error(
-				http.StatusBadRequest,
-				code.AuthorizationError,
-				code.Text(code.AuthorizationError)).WithError(errors.New("Header 中缺少 Authorization 参数")),
-			)
+		authorizationDtate := c.GetHeader(config.HeaderAuthDateField)
+		if len(authorization) == 0 || len(authorizationDtate) == 0 {
+			appG.ResponseErr(errcode.ErrCodes.ErrAuthenticationHeader)
+			c.Abort()
 			return
 		}
-
-		// 时间信息
-		date := c.GetHeader(configs.HeaderSignTokenDate)
-		if date == "" {
-			c.AbortWithError(core.Error(
-				http.StatusBadRequest,
-				code.AuthorizationError,
-				code.Text(code.AuthorizationError)).WithError(errors.New("Header 中缺少 Date 参数")),
-			)
-			return
-		}
-
 		// 通过签名信息获取 key
 		authorizationSplit := strings.Split(authorization, " ")
 		if len(authorizationSplit) < 2 {
-			c.AbortWithError(core.Error(
-				http.StatusBadRequest,
-				code.AuthorizationError,
-				code.Text(code.AuthorizationError)).WithError(errors.New("Header 中 Authorization 格式错误")),
-			)
+			appG.ResponseErr(errcode.ErrCodes.ErrAuthenticationHeader)
+			c.Abort()
 			return
 		}
 
