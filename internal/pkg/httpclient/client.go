@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	httpURL "net/url"
-	"shop-search-api/internal/pkg/errors"
+	"pkg/errors"
 	"shop-search-api/internal/pkg/trace"
 	"time"
 )

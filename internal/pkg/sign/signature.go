@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
-	"shop-search-api/internal/pkg/timeutil"
+	"pkg/timeutil"
 	"strings"
 	"time"
 )

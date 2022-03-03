@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"pkg/timeutil"
 	"shop-search-api/config"
 	"shop-search-api/internal/pkg/logger"
-	"shop-search-api/internal/pkg/timeutil"
 )
 
 func init() {
