@@ -7,8 +7,7 @@ app:
   read_timeout: 60
   write_timeout: 60
   runtime_root_path: runtime/
-  app_log_path: logs/app/shop-api-search.log
-  access_log_path: logs/access/shop-api-search-access.log
+  app_log_path: logs/shop-api-search.log
 
 mysql:
   dbname: shop
