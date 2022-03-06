@@ -15,6 +15,9 @@ mysql:
   user: test
   password: test
   host: 127.0.0.1:3306
+  max_open_conn: 1000
+  max_idle_conn: 100
+  conn_max_life_second: 30
   table_prefix: search_
 
 mongodb:
@@ -33,7 +36,8 @@ elasticsearch:
 
 redis:
   host: 127.0.0.1:27017
-  password: test
-  max_idle: 30
-  max_active: 30
-  idle_timeout: 200
+  db: 0
+  password:
+  min_idle_conn: 500
+  pool_size: 100
+  max_retries: 3

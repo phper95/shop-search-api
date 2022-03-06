@@ -2,15 +2,15 @@
 FROM golang:1.16-alpine AS builder
 
 # ENV 设置环境变量
-ENV GOPATH=/opt/repo
 ENV GO111MODULE=on
 ENV GOPROXY=https://goproxy.cn,direct
+ENV GOPRIVATE=*gitee.com
 
 # COPY 源路径 目标路径
-COPY . $GOPATH/src/github.com/phper95/shop-search-api
+COPY ../ /usr/local/src/shop-search-api
 
 # RUN 执行 go build .
-RUN cd $GOPATH/src/github.com/phper95/shop-search-api && go build .
+RUN cd /usr/local/src/shop-search-api && go build main.go
 
 # FROM 基于 alpine:latest
 FROM alpine:latest
@@ -24,7 +24,7 @@ RUN apk --no-cache add tzdata  && \
     echo "Asia/Shanghai" > /etc/timezone
 
 # COPY 源路径 目标路径 从镜像中 COPY
-COPY --from=builder /opt/repo/src/github.com/phper95/shop-search-api /opt
+COPY --from=builder  /usr/local/src/shop-search-api /usr/local/shop-search-api
 
 # EXPOSE 设置端口映射
 EXPOSE 9999/tcp
@@ -33,4 +33,4 @@ EXPOSE 9999/tcp
 WORKDIR /opt
 
 # CMD 设置启动命令
-CMD ["./shop-search-api", "-env", "fat"]
+CMD ["./shop-search-api"]

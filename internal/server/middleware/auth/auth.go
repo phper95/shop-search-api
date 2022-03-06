@@ -1,12 +1,16 @@
 package auth
 
 import (
-	"errors"
+	"gitee.com/phper95/pkg/cache"
+	"gitee.com/phper95/pkg/db"
+	"gitee.com/phper95/pkg/logger"
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"shop-search-api/config"
 	"shop-search-api/internal/pkg/errcode"
-	"shop-search-api/internal/server/api"
+	"shop-search-api/internal/pkg/sign"
+	"shop-search-api/internal/repo/mysql/auth_repo"
+	"shop-search-api/internal/server/api/api_response"
+	"shop-search-api/internal/service/auth_service"
 	"strings"
 )
 
@@ -21,11 +25,11 @@ sn = MD5(secretKey + encryptParamStr + appKey)
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		appG := api.Gin{C: c}
+		appG := &api_response.Gin{C: c}
 		// header信息校验
 		authorization := c.GetHeader(config.HeaderAuthField)
-		authorizationDtate := c.GetHeader(config.HeaderAuthDateField)
-		if len(authorization) == 0 || len(authorizationDtate) == 0 {
+		authorizationDate := c.GetHeader(config.HeaderAuthDateField)
+		if len(authorization) == 0 || len(authorizationDate) == 0 {
 			appG.ResponseErr(errcode.ErrCodes.ErrAuthenticationHeader)
 			c.Abort()
 			return
@@ -39,81 +43,32 @@ func Auth() gin.HandlerFunc {
 		}
 
 		key := authorizationSplit[0]
-
-		data, err := i.authorizedService.DetailByKey(c, key)
+		authService := auth_service.New(db.GetMysqlClient(config.DefaultMysqlClient),
+			cache.GetRedisClient(config.DefaultRedisClient))
+		data, err := authService.DetailByKey(appG, key)
 		if err != nil {
-			c.AbortWithError(core.Error(
-				http.StatusBadRequest,
-				code.AuthorizationError,
-				code.Text(code.AuthorizationError)).WithError(err),
-			)
+			appG.ResponseErr(errcode.ErrCodes.ErrAuthentication)
+			c.Abort()
 			return
 		}
 
-		if data.IsUsed == authorized.IsUsedNo {
-			c.AbortWithError(core.Error(
-				http.StatusBadRequest,
-				code.AuthorizationError,
-				code.Text(code.AuthorizationError)).WithError(errors.New(key + " 已被禁止调用")),
-			)
+		if data.IsUsed == auth_repo.IsUsedNo {
+			appG.ResponseErr(errcode.ErrCodes.ErrAuthentication)
+			c.Abort()
 			return
 		}
 
-		if len(data.Apis) < 1 {
-			c.AbortWithError(core.Error(
-				http.StatusBadRequest,
-				code.AuthorizationError,
-				code.Text(code.AuthorizationError)).WithError(errors.New(key + " 未进行接口授权")),
-			)
-			return
-		}
-
-		if !whiteListPath[c.Path()] {
-			// 验证 c.Method() + c.Path() 是否授权
-			table := urltable.NewTable()
-			for _, v := range data.Apis {
-				_ = table.Append(v.Method + v.Api)
-			}
-
-			if pattern, _ := table.Mapping(c.Method() + c.Path()); pattern == "" {
-				c.AbortWithError(core.Error(
-					http.StatusBadRequest,
-					code.AuthorizationError,
-					code.Text(code.AuthorizationError)).WithError(errors.New(c.Method() + c.Path() + " 未进行接口授权")),
-				)
-				return
-			}
-		}
-
-		ok, err := signature.New(key, data.Secret, configs.HeaderSignTokenTimeout).Verify(authorization, date, c.Path(), c.Method(), c.RequestInputParams())
+		ok, err := sign.New(key, data.Secret, config.HeaderSignTokenTimeoutSeconds).Verify(authorization, authorizationDate,
+			c.Request.URL.Path, c.Request.Method, c.Request.Form)
 		if err != nil {
-			c.AbortWithError(core.Error(
-				http.StatusBadRequest,
-				code.AuthorizationError,
-				code.Text(code.AuthorizationError)).WithError(err),
-			)
-			return
+			logger.Error("sign verify error")
 		}
-
 		if !ok {
-			c.AbortWithError(core.Error(
-				http.StatusBadRequest,
-				code.AuthorizationError,
-				code.Text(code.AuthorizationError)).WithError(errors.New("Header 中 Authorization 信息错误")),
-			)
+			appG.ResponseErr(errcode.ErrCodes.ErrAuthentication)
+			c.Abort()
 			return
 		}
-	}
-	if code != e.SUCCESS {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code": code,
-			"msg":  e.GetMsg(code),
-			"data": data,
-		})
-
-		c.Abort()
-		return
+		c.Next()
 	}
 
-	c.Next()
 }

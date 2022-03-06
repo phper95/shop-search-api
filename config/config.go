@@ -32,20 +32,22 @@ type App struct {
 	AK              string        `mapstructure:"ak"`
 	AppSignExpire   int64         `mapstructure:"app_sign_expire"`
 	RunMode         string        `mapstructure:"run_mode"`
-	HttpPort        int64         `mapstructure:"http_port"`
-	ReadTimeout     int64         `mapstructure:"read_timeout"`
+	HttpPort        int           `mapstructure:"http_port"`
+	ReadTimeout     time.Duration `mapstructure:"read_timeout"`
 	WriteTimeout    time.Duration `mapstructure:"write_timeout"`
 	RuntimeRootPath string        `mapstructure:"runtime_root_path"`
 	AppLogPath      string        `mapstructure:"app_log_path"`
-	AccessLogPath   string        `mapstructure:"access_log_path"`
 }
 
 type Mysql struct {
-	DBName      string `mapstructure:"dbname"`
-	User        string `mapstructure:"user"`
-	Password    string `mapstructure:"password"`
-	Host        string `mapstructure:"host"`
-	TablePrefix string `mapstructure:"table_prefix"`
+	DBName            string        `mapstructure:"dbname"`
+	User              string        `mapstructure:"user"`
+	Password          string        `mapstructure:"password"`
+	Host              string        `mapstructure:"host"`
+	MaxOpenConn       int           `mapstructure:"max_open_conn"`
+	MaxIdleConn       int           `mapstructure:"max_idle_conn"`
+	ConnMaxLifeSecond time.Duration `mapstructure:"conn_max_life_second"`
+	TablePrefix       string        `mapstructure:"table_prefix"`
 }
 
 type MongoDB struct {
@@ -65,14 +67,15 @@ type Elasticsearch struct {
 }
 
 type Redis struct {
-	Host        string        `mapstructure:"host"`
-	Password    string        `mapstructure:"password"`
-	MaxIdle     int           `mapstructure:"max_idle"`
-	MaxActive   int           `mapstructure:"max_active"`
-	IdleTimeout time.Duration `mapstructure:"idle_timeout"`
+	Host        string `mapstructure:"host"`
+	DB          int    `mapstructure:"db"`
+	Password    string `mapstructure:"password"`
+	MinIdleConn int    `mapstructure:"min_idle_conn"`
+	PoolSize    int    `mapstructure:"pool_size"`
+	MaxRetries  int    `mapstructure:"max_retries"`
 }
 
-// Setup initialize the configuration instance
+// 加载配置，失败直接panic
 func LoadConfig() {
 	viper := viper.New()
 	//1.设置配置文件路径
