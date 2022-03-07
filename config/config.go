@@ -28,8 +28,6 @@ yaml不支持 AppSignExpire int64  `yaml:"app_sign_expire"` 这种下划线的�
 */
 
 type App struct {
-	SK              string        `mapstructure:"sk"`
-	AK              string        `mapstructure:"ak"`
 	AppSignExpire   int64         `mapstructure:"app_sign_expire"`
 	RunMode         string        `mapstructure:"run_mode"`
 	HttpPort        int           `mapstructure:"http_port"`

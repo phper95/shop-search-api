@@ -66,11 +66,11 @@ func initRedisClient() {
 }
 
 func initESClient() {
-
+	// TO DO ...
 }
 
 func initMongoClient() {
-
+	// TO DO ...
 }
 func main() {
 	router := api.InitRouter()

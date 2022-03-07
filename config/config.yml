@@ -1,6 +1,4 @@
 app:
-  ak: AK100523687952
-  sk: W1WTYvJpfeH1YpUjTpeFbEx^DnpQ&35L
   app_sign_expire: 60
   run_mode: dev
   http_port: 80
