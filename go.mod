@@ -6,7 +6,8 @@ require (
 	gitee.com/phper95/pkg/cache v0.0.0-20220306061028-99d7e222b302
 	gitee.com/phper95/pkg/db v0.0.0-20220306054248-1c3565a8e84a
 	gitee.com/phper95/pkg/errors v0.0.0-20220305150109-4dedf954f7fb
-	gitee.com/phper95/pkg/logger v0.0.0-20220306061811-feff391bbc70
+	gitee.com/phper95/pkg/logger v0.0.0-20220308094602-49392b6b5bf5
+	gitee.com/phper95/pkg/shutdown v0.0.0-20220309153452-56ab4dd8fa25
 	gitee.com/phper95/pkg/timeutil v0.0.0-20220305150109-4dedf954f7fb
 	gitee.com/phper95/pkg/trace v0.0.0-20220306061028-99d7e222b302
 	github.com/fsnotify/fsnotify v1.5.1

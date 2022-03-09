@@ -10,11 +10,15 @@ import (
 )
 
 const (
-	dockerStatusExited   = "exited"
-	dockerStatusRunning  = "running"
-	dockerStatusStarting = "starting"
+	DockerStatusExited   = "exited"
+	DockerStatusRunning  = "running"
+	DockerStatusStarting = "starting"
 )
 
+type DockerManager interface {
+	Start(c ContainerOption) (string, error)
+	Stop() error
+}
 type Docker struct {
 	ContainerID   string
 	ContainerName string
@@ -28,7 +32,7 @@ type ContainerOption struct {
 	PortExpose        string
 }
 
-func (d *Docker) isInstalled() bool {
+func (d *Docker) IsInstalled() bool {
 	command := exec.Command("docker", "ps")
 	err := command.Run()
 	if err != nil {
@@ -43,7 +47,7 @@ func (d *Docker) Start(c ContainerOption) (string, error) {
 	command.Stderr = os.Stderr
 	result, err := command.Output()
 	if err != nil {
-		return "", err
+		return string(result), err
 	}
 	d.ContainerID = strings.TrimSpace(string(result))
 	d.ContainerName = c.Name
@@ -51,7 +55,7 @@ func (d *Docker) Start(c ContainerOption) (string, error) {
 	result, err = command.Output()
 	if err != nil {
 		d.Stop()
-		return "", err
+		return string(result), err
 	}
 	return string(result), nil
 }
@@ -59,10 +63,10 @@ func (d *Docker) Start(c ContainerOption) (string, error) {
 func (d *Docker) WaitForStartOrKill(timeout int) error {
 	for tick := 0; tick < timeout; tick++ {
 		containerStatus := d.getContainerStatus()
-		if containerStatus == dockerStatusRunning {
+		if containerStatus == DockerStatusRunning {
 			return nil
 		}
-		if containerStatus == dockerStatusExited {
+		if containerStatus == DockerStatusExited {
 			return nil
 		}
 		time.Sleep(time.Second)
@@ -71,12 +75,25 @@ func (d *Docker) WaitForStartOrKill(timeout int) error {
 	return errors.New("Docker faile to start in given time period so stopped")
 }
 
+func (d *Docker) RemoveIfExists(c ContainerOption) error {
+	command := exec.Command("docker", "ps", "-a", "-q", "-f", "name="+c.Name)
+	output, err := command.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	if len(output) == 0 {
+		return nil
+	}
+	d.ContainerID = strings.Trim(string(output), "\n")
+	return d.Stop()
+}
+
 func (d *Docker) getContainerStatus() string {
 	command := exec.Command("docker", "ps", "-a", "--format", "{{.ID}}|{{.Status}}|{{.Ports}}|{{.Names}}")
 	output, err := command.CombinedOutput()
 	if err != nil {
 		d.Stop()
-		return dockerStatusExited
+		return DockerStatusExited
 	}
 	outputString := string(output)
 	outputString = strings.TrimSpace(outputString)
@@ -87,13 +104,14 @@ func (d *Docker) getContainerStatus() string {
 		containerName := containerStatusData[3]
 		if containerName == d.ContainerName {
 			if strings.HasPrefix(containerStatus, "Up ") {
-				return dockerStatusRunning
+				return DockerStatusRunning
 			}
 		}
 	}
-	return dockerStatusStarting
+	return DockerStatusStarting
 }
 
+//return example: [run -d --name mysql-for-unittest -p 3306:3306 -e MYSQL_USER=test -e MYSQL_PASSWORD=test -e MYSQL_DATABASE=shop -e MYSQL_ROOT_PASSWORD=root --tmpfs /var/lib/mysql mysql:5.7]
 func (d *Docker) getDockerRunOptions(c ContainerOption) []string {
 	portExpose := fmt.Sprintf("%s:%s", c.PortExpose, c.PortExpose)
 	var args []string
@@ -105,6 +123,7 @@ func (d *Docker) getDockerRunOptions(c ContainerOption) []string {
 	return dockerArgs
 }
 
-func (d *Docker) Stop() {
-	exec.Command("docker", "rm", "-f", d.ContainerID).Run()
+func (d *Docker) Stop() error {
+	fmt.Println("rm ContainerID:", d.ContainerID)
+	return exec.Command("docker", "rm", "-f", d.ContainerID).Run()
 }
