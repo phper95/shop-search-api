@@ -35,6 +35,7 @@ func InitLog() {
 }
 func initMysqlClient() {
 	mysqlCfg := config.Cfg.Mysql
+	logger.Warn("mysqlCfg", zap.Any("", mysqlCfg))
 	err := db.InitMysqlClient(config.DefaultMysqlClient, mysqlCfg.User,
 		mysqlCfg.Password, mysqlCfg.Host, mysqlCfg.DBName,
 		db.WithMaxOpenConn(mysqlCfg.MaxOpenConn),
@@ -83,5 +84,8 @@ func main() {
 		MaxHeaderBytes: 1 << 20, //2^20,1MB
 	}
 	logger.Warn("start http server listening %s", zap.String("listenAddr", listenAddr))
-	server.ListenAndServe()
+	err := server.ListenAndServe()
+	if err != nil {
+		logger.Error("http server start error", zap.Error(err))
+	}
 }

@@ -1,5 +1,7 @@
 package docker
 
+import "fmt"
+
 const mysqlStartTimeoutSecond = 10
 
 type MysqlDocker struct {
@@ -21,8 +23,14 @@ func (m *MysqlDocker) StartMysqlDocker() {
 		ContainerFileName: "mysql:5.7",
 	}
 	m.Docker = Docker{}
-	m.Docker.Start(containerOption)
-	m.Docker.WaitForStartOrKill(mysqlStartTimeoutSecond)
+	res, err := m.Docker.Start(containerOption)
+	if err != nil {
+		fmt.Println("Docker.Start error", err, res)
+	}
+	err = m.Docker.WaitForStartOrKill(mysqlStartTimeoutSecond)
+	if err != nil {
+		fmt.Println("WaitForStartOrKill", err)
+	}
 }
 
 func (m *MysqlDocker) Stop() {

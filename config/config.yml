@@ -1,7 +1,7 @@
 app:
   app_sign_expire: 60
   run_mode: dev
-  http_port: 80
+  http_port: 9090
   read_timeout: 60
   write_timeout: 60
   runtime_root_path: runtime/
@@ -9,9 +9,9 @@ app:
 
 mysql:
   dbname: shop
-  user: test
-  password: test
-  host: 127.0.0.1:3306
+  user: root
+  password: root
+  host: localhost:3306
   max_open_conn: 1000
   max_idle_conn: 100
   conn_max_life_second: 30
