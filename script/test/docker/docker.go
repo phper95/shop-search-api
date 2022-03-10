@@ -41,6 +41,24 @@ func (d *Docker) IsInstalled() bool {
 	return true
 }
 
+func (d *Docker) CreateNetwork(name string) error {
+	return exec.Command("docker", "network", "create", name).Run()
+}
+
+func (d *Docker) RemoveNetwork(name string) error {
+	return exec.Command("docker", "network", "rm", name).Run()
+}
+
+func (d *Docker) NetworkExists(name string) bool {
+	err := exec.Command("docker", "network", "inspect", name).Run()
+	if err != nil {
+		return false
+	}
+	return true
+}
+func (d *Docker) Exec(cmd string) error {
+	return exec.Command("docker", "exec", "-it", d.ContainerName, cmd).Run()
+}
 func (d *Docker) Start(c ContainerOption) (string, error) {
 	dockerArgs := d.getDockerRunOptions(c)
 	command := exec.Command("docker", dockerArgs...)

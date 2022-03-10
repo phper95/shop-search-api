@@ -3,10 +3,18 @@ package main
 import (
 	"fmt"
 	"gitee.com/phper95/pkg/shutdown"
+	"github.com/valyala/fasthttp"
 	"shop-search-api/script/test/docker"
+	"strings"
+	"time"
 )
 
-const StartTimeoutSecond = 180
+const (
+	StartTimeoutSecond = 180
+	User               = "test"
+	//注意，ES密码需要大于6位
+	Pass = "unit-test"
+)
 
 func main() {
 	//startMysql()
@@ -15,9 +23,9 @@ func main() {
 
 func startMysql() {
 	mysqlOptions := map[string]string{
-		"MYSQL_ROOT_PASSWORD": "root",
-		"MYSQL_USER":          "test",
-		"MYSQL_PASSWORD":      "test",
+		"MYSQL_ROOT_PASSWORD": Pass,
+		"MYSQL_USER":          User,
+		"MYSQL_PASSWORD":      Pass,
 		"MYSQL_DATABASE":      "shop",
 	}
 	containerOption := docker.ContainerOption{
@@ -52,32 +60,17 @@ func startMysql() {
 }
 
 func startES() {
-
-	//[run -d --name mysql-unittest
-	//	-p 3306:3306 -e MYSQL_USER = test -e MYSQL_PASSWORD = test
-	//	-e MYSQL_DATABASE = shop
-	//	-e MYSQL_ROOT_PASSWORD = root
-	//	--tmpfs /var /lib/mysql mysql:5.7
-	//	]
-	//	docker network create elastic
-	//	docker run --name elastic-unittest --net elastic -p 9200:9200 -it docker.elastic.co/elasticsearch/elasticsearch:8.1.0
-
-	//EsOptions := map[string]string{
-	//	"MYSQL_ROOT_PASSWORD": "root",
-	//	"MYSQL_USER":          "test",
-	//	"MYSQL_PASSWORD":      "test",
-	//	"MYSQL_DATABASE":      "shop",
-	//}
-	--net = host
-
 	containerOption := docker.ContainerOption{
 		Name:              "elastic-unittest",
 		Options:           nil,
 		MountVolumePath:   "/usr/share/elasticsearch/data",
 		PortExpose:        "9200",
-		ContainerFileName: "docker.elastic.co/elasticsearch/elasticsearch:8.1.0",
+		ContainerFileName: "phper95/es8.1",
 	}
 
+	cmd := fmt.Sprintf("/usr/share/elasticsearch/bin/elasticsearch-users useradd %s -p%s -r superuser", User, Pass)
+
+	//network := "elastic"
 	ESDocker := docker.Docker{}
 	if !ESDocker.IsInstalled() {
 		panic("docker has`t installed")
@@ -86,6 +79,7 @@ func startES() {
 	if err != nil {
 		panic(err)
 	}
+	//ESDocker.CreateNetwork(network)
 	res, err := ESDocker.Start(containerOption)
 	if err != nil {
 		fmt.Println(res)
@@ -93,10 +87,31 @@ func startES() {
 	}
 	fmt.Println("docker", containerOption.ContainerFileName, "has started")
 	ESDocker.WaitForStartOrKill(StartTimeoutSecond)
+	//检测服务是否就绪
+	if checkESServer() {
+		err = ESDocker.Exec(cmd)
+		if err != nil {
+			fmt.Println("ESDocker.Exec error", err)
+			ESDocker.RemoveIfExists(containerOption)
+		}
+	} else {
+		fmt.Println("es server start timeout")
+		ESDocker.RemoveIfExists(containerOption)
+	}
 
 	//退出时清理掉
 	shutdown.NewHook().Close(func() {
-		fmt.Println("exited  signal...")
 		ESDocker.RemoveIfExists(containerOption)
 	})
+}
+
+func checkESServer() bool {
+	for tick := 0; tick < StartTimeoutSecond; tick++ {
+		_, _, err := fasthttp.Get(nil, "https://localhost:9200")
+		if strings.Contains(err.Error(), "authority") {
+			return true
+		}
+		time.Sleep(time.Second)
+	}
+	return false
 }
