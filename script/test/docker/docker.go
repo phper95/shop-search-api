@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -56,8 +57,8 @@ func (d *Docker) NetworkExists(name string) bool {
 	}
 	return true
 }
-func (d *Docker) Exec(cmd string) error {
-	return exec.Command("docker", "exec", "-it", d.ContainerName, cmd).Run()
+func (d *Docker) Exec(cmd string, arg ...string) error {
+	return exec.Command(cmd, arg...).Run()
 }
 func (d *Docker) Start(c ContainerOption) (string, error) {
 	dockerArgs := d.getDockerRunOptions(c)
@@ -144,4 +145,22 @@ func (d *Docker) getDockerRunOptions(c ContainerOption) []string {
 func (d *Docker) Stop() error {
 	fmt.Println("rm ContainerID:", d.ContainerID)
 	return exec.Command("docker", "rm", "-f", d.ContainerID).Run()
+}
+
+func RunCommand(cmd string) (string, error) {
+	if runtime.GOOS == "windows" {
+		return runInWindows(cmd)
+	} else {
+		return runInLinux(cmd)
+	}
+}
+
+func runInLinux(cmd string) (string, error) {
+	result, err := exec.Command("/bin/sh", "-c", cmd).Output()
+	return string(result), err
+}
+
+func runInWindows(cmd string) (string, error) {
+	result, err := exec.Command("cmd", "/c", cmd).Output()
+	return string(result), err
 }

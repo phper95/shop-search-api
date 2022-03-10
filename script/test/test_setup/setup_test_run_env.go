@@ -68,7 +68,8 @@ func startES() {
 		ContainerFileName: "phper95/es8.1",
 	}
 
-	cmd := fmt.Sprintf("/usr/share/elasticsearch/bin/elasticsearch-users useradd %s -p%s -r superuser", User, Pass)
+	//cmdArgs := []string{"exec", "-it", containerOption.Name, "/usr/share/elasticsearch/bin/elasticsearch-users", "useradd", User, "-p", Pass, "-r", "superuser"}
+	cmd := fmt.Sprintf("docker exec -it %s /usr/share/elasticsearch/bin/elasticsearch-users useradd %s -p %s -r superuser", containerOption.Name, User, Pass)
 
 	//network := "elastic"
 	ESDocker := docker.Docker{}
@@ -89,11 +90,9 @@ func startES() {
 	ESDocker.WaitForStartOrKill(StartTimeoutSecond)
 	//检测服务是否就绪
 	if checkESServer() {
-		err = ESDocker.Exec(cmd)
-		if err != nil {
-			fmt.Println("ESDocker.Exec error", err)
-			ESDocker.RemoveIfExists(containerOption)
-		}
+		fmt.Println("es server started")
+		res, err = docker.RunCommand(cmd)
+		fmt.Println("res:", res, "err:", err)
 	} else {
 		fmt.Println("es server start timeout")
 		ESDocker.RemoveIfExists(containerOption)
