@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"gitee.com/phper95/pkg/shutdown"
 	"github.com/valyala/fasthttp"
-	"shop-search-api/script/test/docker"
+	"net/http"
+	"shop-search-api/internal/pkg/docker"
 	"time"
 )
 
@@ -61,16 +62,18 @@ func startMysql() {
 
 func startES() {
 	containerOption := docker.ContainerOption{
-		Name:              "elastic-unittest",
-		Options:           map[string]string{"ELASTIC_PASSWORD": Pass},
+		Name: "elastic-unittest",
+		Options: map[string]string{
+			"xpack.security.enabled": "false",
+			"discovery.seed_hosts":   "127.0.0.1:9300",
+			"discovery.type":         "single-node"},
 		MountVolumePath:   "/usr/share/elasticsearch/data",
 		PortExpose:        "9200",
-		ContainerFileName: "phper95/es8.1",
+		ContainerFileName: "phper95/es8.1.0",
+		//ContainerFileName: "docker.elastic.co/elasticsearch/elasticsearch:8.1.0",
 	}
 
-	//cmdArgs := []string{"exec", "-it", containerOption.Name, "/usr/share/elasticsearch/bin/elasticsearch-users", "useradd", User, "-p", Pass, "-r", "superuser"}
-	cmd := fmt.Sprintf("docker exec -it %s /usr/share/elasticsearch/bin/elasticsearch-users useradd %s -p %s -r superuser", containerOption.Name, User, Pass)
-
+	//cmd := fmt.Sprintf("docker exec -it %s /usr/share/elasticsearch/bin/elasticsearch-users useradd %s -p %s -r superuser", containerOption.Name, User, Pass)
 	//network := "elastic"
 	ESDocker := docker.Docker{}
 	if !ESDocker.IsInstalled() {
@@ -87,15 +90,12 @@ func startES() {
 		panic(err)
 	}
 	fmt.Println("docker", containerOption.ContainerFileName, "has started")
-	ESDocker.WaitForStartOrKill(StartTimeoutSecond)
 	//检测服务是否就绪
 	if checkESServer() {
 		fmt.Println("es server started")
-		res, err = docker.RunCommand(cmd)
-		fmt.Println("res:", res, "err:", err)
 	} else {
 		fmt.Println("es server start timeout")
-		ESDocker.RemoveIfExists(containerOption)
+		//ESDocker.RemoveIfExists(containerOption)
 	}
 
 	//退出时清理掉
@@ -105,11 +105,15 @@ func startES() {
 }
 
 func checkESServer() bool {
-	url := fmt.Sprintf("https://%s:%s@localhost:9200", ESUser, Pass)
-	for tick := 0; tick < StartTimeoutSecond; tick++ {
-		httpCode, _, err := fasthttp.Get(nil, url)
-		fmt.Println("httpCode", httpCode, "err", err)
+	url := "http://localhost:9200"
+	fmt.Println(url)
+	for tick := 1; tick <= StartTimeoutSecond; tick++ {
+		httpCode, _, _ := fasthttp.Get(nil, url)
+		if httpCode == http.StatusOK {
+			return true
+		}
 		time.Sleep(time.Second)
+		fmt.Println("check cost ", tick)
 	}
 	return false
 }
