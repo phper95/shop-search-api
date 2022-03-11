@@ -5,12 +5,12 @@ import (
 	"gitee.com/phper95/pkg/shutdown"
 	"github.com/valyala/fasthttp"
 	"shop-search-api/script/test/docker"
-	"strings"
 	"time"
 )
 
 const (
 	StartTimeoutSecond = 180
+	ESUser             = "elastic"
 	User               = "test"
 	//注意，ES密码需要大于6位
 	Pass = "unit-test"
@@ -62,7 +62,7 @@ func startMysql() {
 func startES() {
 	containerOption := docker.ContainerOption{
 		Name:              "elastic-unittest",
-		Options:           nil,
+		Options:           map[string]string{"ELASTIC_PASSWORD": Pass},
 		MountVolumePath:   "/usr/share/elasticsearch/data",
 		PortExpose:        "9200",
 		ContainerFileName: "phper95/es8.1",
@@ -105,11 +105,10 @@ func startES() {
 }
 
 func checkESServer() bool {
+	url := fmt.Sprintf("https://%s:%s@localhost:9200", ESUser, Pass)
 	for tick := 0; tick < StartTimeoutSecond; tick++ {
-		_, _, err := fasthttp.Get(nil, "https://localhost:9200")
-		if strings.Contains(err.Error(), "authority") {
-			return true
-		}
+		httpCode, _, err := fasthttp.Get(nil, url)
+		fmt.Println("httpCode", httpCode, "err", err)
 		time.Sleep(time.Second)
 	}
 	return false
