@@ -15,10 +15,6 @@ const (
 	DockerStatusStarting = "starting"
 )
 
-type DockerManager interface {
-	Start(c ContainerOption) (string, error)
-	Stop() error
-}
 type Docker struct {
 	ContainerID   string
 	ContainerName string
