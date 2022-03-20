@@ -31,6 +31,6 @@ func TestProductSearch(t *testing.T) {
 	}
 	headerAuth := httpclient.WithHeader(config.HeaderAuthField, authorization)
 	headerAuthDate := httpclient.WithHeader(config.HeaderAuthDateField, date)
-	r, e := httpclient.Get(ProductSearchHost+ProductSearchUri, params, headerAuth, headerAuthDate)
-	fmt.Println(string(r), e)
+	c, r, e := httpclient.Get(ProductSearchHost+ProductSearchUri, params, headerAuth, headerAuthDate)
+	fmt.Println(c, string(r), e)
 }

@@ -53,8 +53,8 @@ gitee.com/phper95/pkg/errors v0.0.0-20220305143416-e5471e262040/go.mod h1:QjWVzI
 gitee.com/phper95/pkg/errors v0.0.0-20220305145820-1201417a8338/go.mod h1:QjWVzI0aT0OcBninaydQjEOE7mwhhI5x9SmUOkxR1aY=
 gitee.com/phper95/pkg/errors v0.0.0-20220305150109-4dedf954f7fb h1:raSnmzmcXtJ5hWia9nAhbPzIj25ZkEbwbVJYgQx5CEE=
 gitee.com/phper95/pkg/errors v0.0.0-20220305150109-4dedf954f7fb/go.mod h1:QjWVzI0aT0OcBninaydQjEOE7mwhhI5x9SmUOkxR1aY=
-gitee.com/phper95/pkg/httpclient v0.0.0-20220320082302-c3a996a8a9df h1:reri9RqFAGFz3UzWcsPNbHQD32+WQ4eD1pBc6fFbehE=
-gitee.com/phper95/pkg/httpclient v0.0.0-20220320082302-c3a996a8a9df/go.mod h1:/TgDunpxyn9fDGptIBWsvr38cOGLB8mu3WIPtWd+MO8=
+gitee.com/phper95/pkg/httpclient v0.0.0-20220320125830-ab0e153a1903 h1:KB49P4uUyzdr/CCZNY1CTItrsT4Uu/DQCsDfWsyRtgc=
+gitee.com/phper95/pkg/httpclient v0.0.0-20220320125830-ab0e153a1903/go.mod h1:/TgDunpxyn9fDGptIBWsvr38cOGLB8mu3WIPtWd+MO8=
 gitee.com/phper95/pkg/logger v0.0.0-20220320082302-c3a996a8a9df h1:svO1hiQZRQa5qx8D40/F8MUyIEU/GOdKYceYvWMHEGs=
 gitee.com/phper95/pkg/logger v0.0.0-20220320082302-c3a996a8a9df/go.mod h1:UTngb7FT918eoS8zFyoFtJaTmyrZMfcgBv8lZeckG+0=
 gitee.com/phper95/pkg/timeutil v0.0.0-20220305145820-1201417a8338/go.mod h1:1EPAVZpuiWMRSbRZ3vjWXWk5yRbedoYKy0gUoviIUtY=
