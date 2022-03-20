@@ -26,8 +26,8 @@ func main() {
 
 func InitMiddleware() {
 	wg := sync.WaitGroup{}
-	wg.Add(2)
-	go startMysql(&wg)
+	wg.Add(1)
+	//go startMysql(&wg)
 	go startES(&wg)
 	wg.Wait()
 }

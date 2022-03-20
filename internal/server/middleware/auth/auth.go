@@ -42,6 +42,13 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 
+		//解析参数
+		err := c.Request.ParseForm()
+		if err != nil {
+			appG.ResponseErr(errcode.ErrCodes.ErrParams)
+			c.Abort()
+			return
+		}
 		key := authorizationSplit[0]
 		authService := auth_service.New(db.GetMysqlClient(config.DefaultMysqlClient),
 			cache.GetRedisClient(config.DefaultRedisClient))

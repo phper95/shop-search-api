@@ -43,6 +43,7 @@ func initMysqlClient() {
 		db.WithConnMaxLifeSecond(mysqlCfg.ConnMaxLifeSecond))
 	if err != nil {
 		logger.Error("mysql init error", zap.Error(err))
+		panic("initMysqlClient error")
 	}
 }
 func initRedisClient() {
@@ -63,6 +64,7 @@ func initRedisClient() {
 	err := cache.InitRedis(config.DefaultRedisClient, &opt, &redisTrace)
 	if err != nil {
 		logger.Error("redis init error", zap.Error(err))
+		panic("initRedisClient error")
 	}
 }
 

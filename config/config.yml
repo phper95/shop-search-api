@@ -32,7 +32,7 @@ elasticsearch:
   bulk_workers_num: 10
 
 redis:
-  host: 127.0.0.1:27017
+  host: 127.0.0.1:6379
   db: 0
   password:
   min_idle_conn: 500
