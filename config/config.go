@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"time"
 )
@@ -11,7 +10,7 @@ import (
 var Cfg = &Config{}
 
 type Config struct {
-	App           App           `yaml:"app"`
+	App           App           `mapstructure:"app"`
 	Mysql         Mysql         `mapstructure:"mysql"`
 	MongoDB       MongoDB       `mapstructure:"mongodb"`
 	Elasticsearch Elasticsearch `mapstructure:"elasticsearch"`
@@ -78,25 +77,22 @@ func LoadConfig() {
 	viper := viper.New()
 	//1.设置配置文件路径
 	viper.SetConfigFile("config/config.yml")
-
 	//2.配置读取
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}
-
 	//3.将配置映射成结构体
-	if err := viper.Unmarshal(&Cfg); err != nil {
-		logrus.Error(err)
+	if err := viper.Unmarshal(Cfg); err != nil {
 		panic(err)
 	}
 
 	//4. 监听配置文件变动,重新解析配置
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Println("Config file changed:", e.Name)
-		if err := viper.Unmarshal(&Cfg); err != nil {
-			logrus.Error(err)
+		fmt.Println(e.Name)
+		if err := viper.Unmarshal(Cfg); err != nil {
 			panic(err)
 		}
 	})
+
 }
