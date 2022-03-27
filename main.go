@@ -9,7 +9,6 @@ import (
 	"gitee.com/phper95/pkg/trace"
 	"github.com/go-redis/redis/v7"
 	"go.uber.org/zap"
-	"net/http"
 	"shop-search-api/config"
 	"shop-search-api/internal/server/api"
 )
@@ -78,15 +77,8 @@ func initMongoClient() {
 func main() {
 	router := api.InitRouter()
 	listenAddr := fmt.Sprintf(":%d", config.Cfg.App.HttpPort)
-	server := &http.Server{
-		Addr:           listenAddr,
-		Handler:        router,
-		ReadTimeout:    config.Cfg.App.ReadTimeout,
-		WriteTimeout:   config.Cfg.App.WriteTimeout,
-		MaxHeaderBytes: 1 << 20, //2^20,1MB
-	}
 	logger.Warn("start http server listening %s", zap.String("listenAddr", listenAddr))
-	err := server.ListenAndServe()
+	err := router.Run(listenAddr)
 	if err != nil {
 		logger.Error("http server start error", zap.Error(err))
 	}
