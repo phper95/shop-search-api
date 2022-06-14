@@ -1,6 +1,17 @@
-## 关于
+## 介绍
 
-`shop-search-api` 是基于 [Gin](https://github.com/gin-gonic/gin) 进行模块化设计的 API 框架，封装了电商搜索相关功能，使用简单，致力于进行快速的业务研发
+`shop-search-api` 是
+
+**Golang+Elasticsearch8构建海量数据高性能搜索服务最佳实践** 课程相关代码
+课程地址请看 [Golang+Elasticsearch8构建海量数据高性能搜索服务最佳实践](https://coding.imooc.com/class/579.html?mc_marking=bb86c9071ed9b7cf12612a2a85203372&mc_channel=hk)
+
+
+#### 使用说明
+
+结合课程先自己实现一遍再看源码
+
+
+
 
 
 集成组件：
