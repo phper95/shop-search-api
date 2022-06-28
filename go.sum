@@ -49,6 +49,8 @@ gitee.com/phper95/pkg/cache v0.0.0-20220320105256-ad9d98ffcf0b h1:ocd5DViehohT/v
 gitee.com/phper95/pkg/cache v0.0.0-20220320105256-ad9d98ffcf0b/go.mod h1:bxt0Pu8dtJOgLgtWq3ltY56lx2w4UjVbXa2zFaTVt58=
 gitee.com/phper95/pkg/db v0.0.0-20220320094248-fb3254efc09f h1:1bm/RuC5XlqDVWfF3xRsNl6hIsCjGxBaK3ZAw8HYhnc=
 gitee.com/phper95/pkg/db v0.0.0-20220320094248-fb3254efc09f/go.mod h1:SyM+dsNsryFVqCYalmTtTGn7mTH01SFG77LALHExcfc=
+gitee.com/phper95/pkg/docker v0.0.0-20220329234458-2cfbe7f00626 h1:3LIO9GJ31vbUolP7fNUWJzGFX2zr1aJWpclEpMG+Llo=
+gitee.com/phper95/pkg/docker v0.0.0-20220329234458-2cfbe7f00626/go.mod h1:cW9FHq990VzQgYVM/N/ZasxmIKGwxWSf9Gz8GlbesJQ=
 gitee.com/phper95/pkg/errors v0.0.0-20220305143416-e5471e262040/go.mod h1:QjWVzI0aT0OcBninaydQjEOE7mwhhI5x9SmUOkxR1aY=
 gitee.com/phper95/pkg/errors v0.0.0-20220305145820-1201417a8338/go.mod h1:QjWVzI0aT0OcBninaydQjEOE7mwhhI5x9SmUOkxR1aY=
 gitee.com/phper95/pkg/errors v0.0.0-20220305150109-4dedf954f7fb h1:raSnmzmcXtJ5hWia9nAhbPzIj25ZkEbwbVJYgQx5CEE=
@@ -282,7 +284,6 @@ github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/klauspost/compress v1.15.0 h1:xqfchp4whNFxn5A4XFyyYtitiWI8Hy5EW59jEwcyL6U=
 github.com/klauspost/compress v1.15.0/go.mod h1:/3/Vjq9QcHkK5uEr5lBEmyoZ1iFhe47etQ6QUkpK6sk=
-github.com/konsorten/go-windows-terminal-sequences v1.0.1 h1:mweAR1A6xJ3oS2pRaGiHgQ4OO8tzTaLawm8vnODuwDk=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/fs v0.1.0/go.mod h1:FFnZGqtBN9Gxj7eW1uZ42v5BccTP0vu6NEaFoC2HwRg=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
@@ -363,7 +364,6 @@ github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb
 github.com/sagikazarmark/crypt v0.4.0/go.mod h1:ALv2SRj7GxYV4HO9elxH9nS6M9gW+xDNxqmyJ6RfDFM=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
-github.com/sirupsen/logrus v1.4.2 h1:SPIRibHv4MatM3XXNO2BJeFLZwZ2LvZgfQ5+UNI2im4=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spf13/afero v1.3.3/go.mod h1:5KUK8ByomD5Ti5Artl0RtHeI5pTF7MIDuXL3yY520V4=
