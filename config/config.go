@@ -56,12 +56,12 @@ type MongoDB struct {
 }
 
 type Elasticsearch struct {
-	URL            string `mapstructure:"url"`
-	User           string `mapstructure:"user"`
-	Password       string `mapstructure:"password"`
-	BulkActionNum  int    `mapstructure:"bulk_action_num"`
-	BulkActionSize int    `mapstructure:"bulk_action_size"` //kb
-	BulkWorkersNum int    `mapstructure:"bulk_workers_num"`
+	Host           []string `mapstructure:"host"`
+	User           string   `mapstructure:"user"`
+	Password       string   `mapstructure:"password"`
+	BulkActionNum  int      `mapstructure:"bulk_action_num"`
+	BulkActionSize int      `mapstructure:"bulk_action_size"` //kb
+	BulkWorkersNum int      `mapstructure:"bulk_workers_num"`
 }
 
 type Redis struct {

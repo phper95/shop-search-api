@@ -3,12 +3,13 @@ module shop-search-api
 go 1.16
 
 require (
-	gitee.com/phper95/pkg/cache v0.0.0-20220306061028-99d7e222b302
-	gitee.com/phper95/pkg/db v0.0.0-20220306054248-1c3565a8e84a
-	gitee.com/phper95/pkg/errors v0.0.0-20220305150109-4dedf954f7fb
-	gitee.com/phper95/pkg/logger v0.0.0-20220306061811-feff391bbc70
-	gitee.com/phper95/pkg/timeutil v0.0.0-20220305150109-4dedf954f7fb
-	gitee.com/phper95/pkg/trace v0.0.0-20220306061028-99d7e222b302
+	gitee.com/phper95/pkg/cache v0.0.0-20220717163743-33b0059a0c45
+	gitee.com/phper95/pkg/db v0.0.0-20220717163743-33b0059a0c45
+	gitee.com/phper95/pkg/errors v0.0.0-20220617101954-d91cbcfc08f6
+	gitee.com/phper95/pkg/es v0.0.0-20220717163743-33b0059a0c45
+	gitee.com/phper95/pkg/shutdown v0.0.0-20220717163743-33b0059a0c45
+	gitee.com/phper95/pkg/timeutil v0.0.0-20220717163743-33b0059a0c45
+	gitee.com/phper95/pkg/trace v0.0.0-20220717163743-33b0059a0c45
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis/v7 v7.4.1

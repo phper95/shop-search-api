@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"gitee.com/phper95/pkg/cache"
 	"gitee.com/phper95/pkg/db"
+	"gitee.com/phper95/pkg/es"
 	"gitee.com/phper95/pkg/logger"
+	"gitee.com/phper95/pkg/shutdown"
 	"gitee.com/phper95/pkg/timeutil"
 	"gitee.com/phper95/pkg/trace"
 	"github.com/go-redis/redis/v7"
@@ -12,6 +15,7 @@ import (
 	"net/http"
 	"shop-search-api/config"
 	"shop-search-api/internal/server/api"
+	"time"
 )
 
 func init() {
@@ -36,11 +40,7 @@ func InitLog() {
 func initMysqlClient() {
 	mysqlCfg := config.Cfg.Mysql
 	logger.Warn("mysqlCfg", zap.Any("", mysqlCfg))
-	err := db.InitMysqlClient(config.DefaultMysqlClient, mysqlCfg.User,
-		mysqlCfg.Password, mysqlCfg.Host, mysqlCfg.DBName,
-		db.WithMaxOpenConn(mysqlCfg.MaxOpenConn),
-		db.WithMaxIdleConn(mysqlCfg.MaxOpenConn),
-		db.WithConnMaxLifeSecond(mysqlCfg.ConnMaxLifeSecond))
+	err := db.InitMysqlClient(db.DefaultClient, mysqlCfg.User, mysqlCfg.Password, mysqlCfg.Host, mysqlCfg.DBName)
 	if err != nil {
 		logger.Error("mysql init error", zap.Error(err))
 	}
@@ -67,7 +67,15 @@ func initRedisClient() {
 }
 
 func initESClient() {
-	// TO DO ...
+	ESCfg := config.Cfg.Elasticsearch
+	err := es.InitClientWithOptions(es.DefaultClient, ESCfg.Host,
+		ESCfg.User,
+		ESCfg.Password,
+		es.WithScheme("https"))
+	if err != nil {
+		logger.Error("InitClientWithOptions error", zap.Error(err), zap.String("client", es.DefaultClient))
+		panic(err)
+	}
 }
 
 func initMongoClient() {
@@ -84,8 +92,22 @@ func main() {
 		MaxHeaderBytes: 1 << 20, //2^20,1MB
 	}
 	logger.Warn("start http server listening %s", zap.String("listenAddr", listenAddr))
-	err := server.ListenAndServe()
-	if err != nil {
-		logger.Error("http server start error", zap.Error(err))
-	}
+	go func() {
+		err := server.ListenAndServe()
+		if err != nil {
+			logger.Error("http server start error", zap.Error(err))
+		}
+	}()
+
+	//优雅关闭
+	shutdown.NewHook().Close(
+		func() {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+			defer cancel()
+			if err := server.Shutdown(ctx); err != nil {
+				logger.Error("http server shutdown err", zap.Error(err))
+			}
+
+		},
+	)
 }

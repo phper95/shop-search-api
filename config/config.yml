@@ -24,7 +24,7 @@ mongodb:
     host: 127.0.0.1:27017
 
 elasticsearch:
-  url: http://127.0.0.1:9200
+  host: ["https://127.0.0.1:9200"]
   user: elastic
   password: test
   bulk_action_num: 1000
