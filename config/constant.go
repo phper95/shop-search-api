@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 const (
 	AppName = "shop-search-api"
 	//Header 中传递的参数字段，其携带的值为接口的签名
@@ -15,6 +17,6 @@ const (
 	DefaultRedisClient = "default-redis"
 
 	RedisKeyPrefixSignature       = "sign:"
-	RedisSignatureCacheSeconds    = 300
-	HeaderSignTokenTimeoutSeconds = 300
+	RedisSignatureCacheSeconds    = 300 * time.Second
+	HeaderSignTokenTimeoutSeconds = 300 * time.Second
 )

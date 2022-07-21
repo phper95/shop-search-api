@@ -3,7 +3,9 @@ package auth_service
 import (
 	"encoding/json"
 	"gitee.com/phper95/pkg/db"
+	"gitee.com/phper95/pkg/logger"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"shop-search-api/config"
 	"shop-search-api/internal/repo/mysql/auth_repo"
 	"shop-search-api/internal/server/api/api_response"
@@ -39,7 +41,7 @@ func (s *service) DetailByKey(ctx *api_response.Gin, key string) (cacheData *Cac
 		if err != nil {
 			return nil, err
 		}
-
+		logger.Debug("authorizedInfo", zap.Any("", authorizedInfo))
 		// 设置缓存 data
 		cacheData = new(CacheAuthorizedData)
 		cacheData.Key = key

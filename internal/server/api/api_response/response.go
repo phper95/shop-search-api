@@ -23,7 +23,6 @@ func (g *Gin) ResponseOk(errCode errcode.ErrCode, data interface{}) {
 		Msg:     errCode.Desc,
 		Data:    data,
 	})
-	return
 }
 
 func (g *Gin) ResponseErr(errCode errcode.ErrCode) {
@@ -33,5 +32,4 @@ func (g *Gin) ResponseErr(errCode errcode.ErrCode) {
 		Msg:     errCode.Desc,
 		Data:    nil,
 	})
-	return
 }

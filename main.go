@@ -43,6 +43,7 @@ func initMysqlClient() {
 	err := db.InitMysqlClient(db.DefaultClient, mysqlCfg.User, mysqlCfg.Password, mysqlCfg.Host, mysqlCfg.DBName)
 	if err != nil {
 		logger.Error("mysql init error", zap.Error(err))
+		panic("initMysqlClient error")
 	}
 }
 func initRedisClient() {
@@ -63,6 +64,7 @@ func initRedisClient() {
 	err := cache.InitRedis(config.DefaultRedisClient, &opt, &redisTrace)
 	if err != nil {
 		logger.Error("redis init error", zap.Error(err))
+		panic("initRedisClient error")
 	}
 }
 
@@ -84,14 +86,14 @@ func initMongoClient() {
 func main() {
 	router := api.InitRouter()
 	listenAddr := fmt.Sprintf(":%d", config.Cfg.App.HttpPort)
+	logger.Warn("start http server listening %s", zap.String("listenAddr", listenAddr))
 	server := &http.Server{
 		Addr:           listenAddr,
 		Handler:        router,
-		ReadTimeout:    config.Cfg.App.ReadTimeout,
-		WriteTimeout:   config.Cfg.App.WriteTimeout,
-		MaxHeaderBytes: 1 << 20, //2^20,1MB
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
 	}
-	logger.Warn("start http server listening %s", zap.String("listenAddr", listenAddr))
 	go func() {
 		err := server.ListenAndServe()
 		if err != nil {

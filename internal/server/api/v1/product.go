@@ -7,9 +7,9 @@ import (
 )
 
 type Product struct {
-	ID    uint
-	Name  string
-	Price string
+	ID    uint64  `json:"id"`
+	Name  string  `json:"name"`
+	Price float64 `json:"price"`
 }
 
 func ProductGet(c *gin.Context) {

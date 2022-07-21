@@ -143,7 +143,6 @@ func (s *signature) Verify(authorization, date string, path string, method strin
 		err = errors.Errorf("url QueryUnescape error %v", err)
 		return
 	}
-
 	buffer := bytes.NewBuffer(nil)
 	buffer.WriteString(path)
 	buffer.WriteString(delimiter)
@@ -159,5 +158,6 @@ func (s *signature) Verify(authorization, date string, path string, method strin
 	digest := base64.StdEncoding.EncodeToString(hash.Sum(nil))
 
 	ok = authorization == fmt.Sprintf("%s %s", s.key, digest)
+	fmt.Println("authorization", authorization, "auth", fmt.Sprintf("%s %s", s.key, digest))
 	return
 }

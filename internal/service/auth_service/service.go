@@ -12,10 +12,10 @@ type Service interface {
 
 type service struct {
 	db    *gorm.DB
-	cache cache.Redis
+	cache *cache.Redis
 }
 
-func New(db *gorm.DB, cache cache.Redis) Service {
+func New(db *gorm.DB, cache *cache.Redis) Service {
 	return &service{
 		db:    db,
 		cache: cache,
