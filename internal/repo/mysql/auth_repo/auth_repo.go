@@ -2,7 +2,6 @@ package auth_repo
 
 import (
 	"fmt"
-	"gitee.com/phper95/pkg/db"
 	"gitee.com/phper95/pkg/errors"
 	"gorm.io/gorm"
 	"time"
@@ -131,12 +130,12 @@ func (qb *authQueryBuilder) Offset(offset int) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereId(p db.Predicate, value int32) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereId(predicate string, value int32) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "id", p),
+		fmt.Sprintf("%v %v ?", "id", predicate),
 		value,
 	})
 	return qb
@@ -174,12 +173,12 @@ func (qb *authQueryBuilder) OrderById(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereBusinessKey(p db.Predicate, value string) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereBusinessKey(predicate, value string) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "business_key", p),
+		fmt.Sprintf("%v %v ?", "business_key", predicate),
 		value,
 	})
 	return qb
@@ -217,12 +216,12 @@ func (qb *authQueryBuilder) OrderByBusinessKey(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereBusinessSecret(p db.Predicate, value string) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereBusinessSecret(predicate, value string) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "business_secret", p),
+		fmt.Sprintf("%v %v ?", "business_secret", predicate),
 		value,
 	})
 	return qb
@@ -260,12 +259,12 @@ func (qb *authQueryBuilder) OrderByBusinessSecret(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereBusinessDeveloper(p db.Predicate, value string) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereBusinessDeveloper(predicate, value string) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "business_developer", p),
+		fmt.Sprintf("%v %v ?", "business_developer", predicate),
 		value,
 	})
 	return qb
@@ -303,12 +302,12 @@ func (qb *authQueryBuilder) OrderByBusinessDeveloper(asc bool) *authQueryBuilder
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereRemark(p db.Predicate, value string) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereRemark(predicate, value string) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "remark", p),
+		fmt.Sprintf("%v %v ?", "remark", predicate),
 		value,
 	})
 	return qb
@@ -346,12 +345,12 @@ func (qb *authQueryBuilder) OrderByRemark(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereIsUsed(p db.Predicate, value int32) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereIsUsed(predicate string, value int32) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "is_used", p),
+		fmt.Sprintf("%v %v ?", "is_used", predicate),
 		value,
 	})
 	return qb
@@ -389,12 +388,12 @@ func (qb *authQueryBuilder) OrderByIsUsed(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereIsDeleted(p db.Predicate, value int32) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereIsDeleted(predicate string, value int32) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "is_deleted", p),
+		fmt.Sprintf("%v %v ?", "is_deleted", predicate),
 		value,
 	})
 	return qb
@@ -432,12 +431,12 @@ func (qb *authQueryBuilder) OrderByIsDeleted(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereCreatedAt(p db.Predicate, value time.Time) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereCreatedAt(predicate string, value time.Time) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "created_at", p),
+		fmt.Sprintf("%v %v ?", "created_at", predicate),
 		value,
 	})
 	return qb
@@ -475,12 +474,12 @@ func (qb *authQueryBuilder) OrderByCreatedAt(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereCreatedUser(p db.Predicate, value string) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereCreatedUser(predicate, value string) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "created_user", p),
+		fmt.Sprintf("%v %v ?", "created_user", predicate),
 		value,
 	})
 	return qb
@@ -518,12 +517,12 @@ func (qb *authQueryBuilder) OrderByCreatedUser(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereUpdatedAt(p db.Predicate, value time.Time) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereUpdatedAt(predicate string, value time.Time) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "updated_at", p),
+		fmt.Sprintf("%v %v ?", "updated_at", predicate),
 		value,
 	})
 	return qb
@@ -561,12 +560,12 @@ func (qb *authQueryBuilder) OrderByUpdatedAt(asc bool) *authQueryBuilder {
 	return qb
 }
 
-func (qb *authQueryBuilder) WhereUpdatedUser(p db.Predicate, value string) *authQueryBuilder {
+func (qb *authQueryBuilder) WhereUpdatedUser(predicate, value string) *authQueryBuilder {
 	qb.where = append(qb.where, struct {
 		prefix string
 		value  interface{}
 	}{
-		fmt.Sprintf("%v %v ?", "updated_user", p),
+		fmt.Sprintf("%v %v ?", "updated_user", predicate),
 		value,
 	})
 	return qb

@@ -2,7 +2,6 @@ package auth_service
 
 import (
 	"encoding/json"
-	"gitee.com/phper95/pkg/db"
 	"gitee.com/phper95/pkg/logger"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -34,8 +33,8 @@ func (s *service) DetailByKey(ctx *api_response.Gin, key string) (cacheData *Cac
 	if !ok {
 		// 查询调用方信息
 		authorizedInfo, err := auth_repo.NewQueryBuilder().
-			WhereIsDeleted(db.EqualPredicate, -1).
-			WhereBusinessKey(db.EqualPredicate, key).
+			WhereIsDeleted("=", -1).
+			WhereBusinessKey("=", key).
 			First(s.db)
 
 		if err != nil {
@@ -58,7 +57,7 @@ func (s *service) DetailByKey(ctx *api_response.Gin, key string) (cacheData *Cac
 		return cacheData, nil
 	}
 
-	value, err := s.cache.Get(cacheKey)
+	value, err := s.cache.GetStr(cacheKey)
 	if err != nil {
 		return nil, err
 	}

@@ -1,11 +1,10 @@
 package auth
 
 import (
-	"gitee.com/phper95/pkg/cache"
-	"gitee.com/phper95/pkg/db"
 	"gitee.com/phper95/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"shop-search-api/config"
+	"shop-search-api/global"
 	"shop-search-api/internal/pkg/errcode"
 	"shop-search-api/internal/pkg/sign"
 	"shop-search-api/internal/repo/mysql/auth_repo"
@@ -50,8 +49,7 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 		key := authorizationSplit[0]
-		authService := auth_service.New(db.GetMysqlClient(config.DefaultMysqlClient),
-			cache.GetRedisClient(config.DefaultRedisClient))
+		authService := auth_service.New(global.DB, global.CACHE)
 		data, err := authService.DetailByKey(appG, key)
 		if err != nil {
 			appG.ResponseErr(errcode.ErrCodes.ErrAuthentication)

@@ -10,7 +10,7 @@ app:
 mysql:
   dbname: shop
   user: root
-  password: root
+  password: admin123
   host: localhost:3306
   max_open_conn: 1000
   max_idle_conn: 100
@@ -19,14 +19,14 @@ mysql:
 
 mongodb:
     dbname: shop
-    user: test
-    password: test
+    user: admin
+    password: admin123
     host: 127.0.0.1:27017
 
 elasticsearch:
   host: ["https://127.0.0.1:9200"]
   user: elastic
-  password: test
+  password: elastic
   bulk_action_num: 1000
   bulk_action_size: 20480
   bulk_workers_num: 10
