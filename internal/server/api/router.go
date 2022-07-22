@@ -19,7 +19,6 @@ func InitRouter() *gin.Engine {
 	apiv1.POST("/product-msg-callback", v1.ProductMsgCallback)
 	apiv1.POST("/product-msg-batch-callback", v1.ProductMsgBatchCallback)
 	apiv1.GET("/product-search", v1.ProductSearch)
-	apiv1.GET("/product-get", v1.ProductGet)
 
 	return engin
 
