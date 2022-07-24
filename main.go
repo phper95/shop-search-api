@@ -78,6 +78,7 @@ func initESClient() {
 		logger.Error("InitClientWithOptions error", zap.Error(err), zap.String("client", es.DefaultClient))
 		panic(err)
 	}
+	global.ES = es.GetClient(es.DefaultClient)
 }
 
 func initMongoClient() {
@@ -86,7 +87,7 @@ func initMongoClient() {
 func main() {
 	router := api.InitRouter()
 	listenAddr := fmt.Sprintf(":%d", config.Cfg.App.HttpPort)
-	global.LOG.Warn("start http server listening %s", zap.String("listenAddr", listenAddr))
+	global.LOG.Warn("start http server", zap.String("listenAddr", listenAddr))
 	server := &http.Server{
 		Addr:           listenAddr,
 		Handler:        router,

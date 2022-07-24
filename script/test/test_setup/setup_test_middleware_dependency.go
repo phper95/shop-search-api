@@ -36,7 +36,7 @@ func startES(wg *sync.WaitGroup) {
 	defer func() {
 		wg.Done()
 	}()
-	containerOption := docker.ContainerOption{
+	containerOption := docker.ContainerOptions{
 		Name:      "elastic-unittest",
 		ImageName: "phper95/es8.1.0",
 		Options: map[string]string{
@@ -51,7 +51,7 @@ func startES(wg *sync.WaitGroup) {
 	if !ESDocker.IsInstalled() {
 		panic("docker has`t install")
 	}
-	err := ESDocker.RemoveIfExists(containerOption)
+	err := ESDocker.RemoveIfExists()
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ func startES(wg *sync.WaitGroup) {
 		fmt.Println("es sever has started")
 	} else {
 		fmt.Println("es sever started timeout")
-		ESDocker.RemoveIfExists(containerOption)
+		ESDocker.RemoveIfExists()
 	}
 }
 
@@ -80,7 +80,7 @@ func StartMysql(wg *sync.WaitGroup) {
 		"MYSQL_DATABASE":      "shop",
 	}
 
-	containerOption := docker.ContainerOption{
+	containerOption := docker.ContainerOptions{
 		Name:       "mysql-unittest",
 		ImageName:  "mysql:5.7",
 		Options:    mysqlOptions,
@@ -91,7 +91,7 @@ func StartMysql(wg *sync.WaitGroup) {
 	if !mysqlDocker.IsInstalled() {
 		panic("docker has`t install")
 	}
-	err := mysqlDocker.RemoveIfExists(containerOption)
+	err := mysqlDocker.RemoveIfExists()
 	if err != nil {
 		panic(err)
 	}

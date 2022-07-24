@@ -15,3 +15,5 @@ CREATE TABLE  IF NOT EXISTS `auth` (
                               PRIMARY KEY (`id`),
                               UNIQUE KEY `unique_business_key` (`business_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='开发者接口授权表';
+
+INSERT INTO shop.auth (id, business_key, business_secret, business_developer, remark, is_used, is_deleted, created_at, created_user, updated_at, updated_user) VALUES (1, 'AK100523687952', 'W1WTYvJpfeH1YpUjTpeFbEx^DnpQ&35L', '', '', 1, -1, '2022-03-24 15:09:01', 'admin', '2022-07-24 15:10:25', '');

@@ -55,11 +55,12 @@ type errCodes struct {
 	ErrMongoDSL             ErrCode
 	ErrRedisServer          ErrCode
 	ErrKafkaServer          ErrCode
+	ErrSearch               ErrCode
 }
 
 var ErrCodes = errCodes{
 	ErrNo: ErrCode{
-		Code:     10010000,
+		Code:     0,
 		HTTPCode: 200,
 		Desc:     "OK",
 	},
@@ -157,5 +158,10 @@ var ErrCodes = errCodes{
 		Code:     10010501,
 		HTTPCode: 500,
 		Desc:     "Kafka server error",
+	},
+	ErrSearch: ErrCode{
+		Code:     10010601,
+		HTTPCode: 500,
+		Desc:     "search error",
 	},
 }

@@ -10,6 +10,8 @@ const (
 	//Header 中传递的参数字段，其携带的值为发起请求的时间，用于签名失效验证
 	HeaderAuthDateField = "Authorization-Date"
 
+	AuthorizationExpire = time.Minute * 30
+
 	RunModeDev  = "dev"
 	RunModeProd = "prod"
 

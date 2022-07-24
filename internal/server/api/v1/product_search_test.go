@@ -3,10 +3,10 @@ package v1
 import (
 	"fmt"
 	"gitee.com/phper95/pkg/httpclient"
+	"gitee.com/phper95/pkg/sign"
 	"net/http"
 	"net/url"
 	"shop-search-api/config"
-	"shop-search-api/internal/pkg/sign"
 	"testing"
 	"time"
 )
@@ -23,7 +23,9 @@ var (
 func TestProductSearch(t *testing.T) {
 	params := url.Values{}
 	params.Add("userid", "1")
-	params.Add("keyword", "imooc")
+	params.Add("keyword", "手机")
+	params.Add("page_num", "1")
+	params.Add("page_size", "10")
 	authorization, date, err := sign.New(ak, sk, ttl).Generate(ProductSearchUri, http.MethodGet, params)
 	if err != nil {
 		fmt.Println(err)
