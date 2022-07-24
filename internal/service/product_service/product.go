@@ -7,14 +7,15 @@ import (
 	"github.com/olivere/elastic/v7"
 	"shop-search-api/global"
 	"strconv"
+	"strings"
 )
 
 type Product struct {
 	UserID   int64  `json:"user_id"`
 	Keyword  string `json:"keyword"`
 	New      *int   `json:"new"`
-	Sales    *int   `json:"sales"`
-	Price    *int   `json:"price"`
+	Sales    string `json:"sales"`
+	Price    string `json:"price"`
 	PageNum  int    `json:"page_num"`
 	PageSize int    `json:"page_size"`
 }
@@ -36,9 +37,37 @@ func (s *Product) SearchProduct() (result *elastic.SearchResult, err error) {
 	if strutil.IncludeLetter(s.Keyword) {
 		shouldQuerys = append(shouldQuerys, storeNamePinyinMatchPhreaseQuery)
 	}
+
+	//是否新品
+	if s.New != nil {
+		query.Must(elastic.NewTermQuery("is_new", s.New))
+	}
+
 	query.Should(shouldQuerys...)
+
+	orders := make([]map[string]bool, 0)
+	//价格排序
+	if len(s.Price) > 0 {
+		if strings.ToLower(s.Price) == "desc" {
+			orders = append(orders, map[string]bool{"price": false})
+		} else {
+			orders = append(orders, map[string]bool{"price": true})
+		}
+	}
+
+	//销量排序
+	if len(s.Sales) > 0 {
+		if strings.ToLower(s.Sales) == "desc" {
+			orders = append(orders, map[string]bool{"sales": false})
+		} else {
+			orders = append(orders, map[string]bool{"sales": true})
+		}
+	}
+	//默认按照相关度算分来排序
+	orders = append(orders, map[string]bool{"_score": false})
 
 	return global.ES.Query(context.Background(), global.ProductIndexName,
 		nil, query, from, s.PageSize, es.WithEnableDSL(true),
-		es.WithPreference(strconv.FormatInt(s.UserID, 10)), es.WithFetchSource(false))
+		es.WithPreference(strconv.FormatInt(s.UserID, 10)),
+		es.WithFetchSource(false), es.WithOrders(orders))
 }

@@ -29,21 +29,8 @@ func ProductSearch(c *gin.Context) {
 		PageNum:  com.StrTo(c.Query("page_num")).MustInt(),
 		PageSize: com.StrTo(c.Query("page_size")).MustInt(),
 	}
-	sales := c.Query("sales_order")
-	salesOrder := com.StrTo(sales).MustInt()
-	if len(sales) == 0 {
-		productService.Sales = nil
-	} else {
-		productService.Sales = &salesOrder
-	}
-
-	price := c.Query("price_order")
-	priceOrder := com.StrTo(price).MustInt()
-	if len(sales) == 0 {
-		productService.Price = nil
-	} else {
-		productService.Price = &priceOrder
-	}
+	productService.Sales = c.Query("sales_order")
+	productService.Price = c.Query("price_order")
 
 	news := c.Query("news")
 	newsOrder := com.StrTo(news).MustInt()

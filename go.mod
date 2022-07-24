@@ -7,7 +7,7 @@ require (
 	gitee.com/phper95/pkg/db v0.0.0-20220724124223-a4f7b6c91282
 	gitee.com/phper95/pkg/docker v0.0.0-20220724124223-a4f7b6c91282
 	gitee.com/phper95/pkg/errors v0.0.0-20220724124223-a4f7b6c91282
-	gitee.com/phper95/pkg/es v0.0.0-20220724124223-a4f7b6c91282
+	gitee.com/phper95/pkg/es v0.0.0-20220724162038-b78433a64c97
 	gitee.com/phper95/pkg/httpclient v0.0.0-20220724124223-a4f7b6c91282
 	gitee.com/phper95/pkg/logger v0.0.0-20220724124223-a4f7b6c91282
 	gitee.com/phper95/pkg/shutdown v0.0.0-20220724124223-a4f7b6c91282
